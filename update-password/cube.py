@@ -48,7 +48,7 @@ def login():
     driver.get(referer)
 
 def change(old_password: str, new_password: str):
-    sleep(3)
+    sleep(5)
     log.info(f"비밀번호 변경 중... [{old_password}] to [{new_password}]")
 
     driver.get(referer) # 간헐적으로 접근이 안돼서 한 번 더 접근 시도

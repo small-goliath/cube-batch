@@ -10,8 +10,8 @@ load_dotenv()
 
 logging.config.fileConfig('logging.conf')
 log = logging.getLogger('update_password')
-icon_path = logging.getLogger('icon')
-log_path = logging.getLogger('log')
+icon_path = os.getenv('icon')
+log_path = os.getenv('log')
 
 def generate_random_string():
     length = 8
