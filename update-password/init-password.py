@@ -43,25 +43,36 @@ def send_mac_notification(is_succeed, title, message):
         '''
     os.system(script)
 
-if __name__ == "__main__":
-    try:
-        login()
+def lets_start():
+    login()
         
-        TEMP_1_password = generate_random_string()
-        TEMP_2_password = generate_random_string()
-        TEMP_3_password = generate_random_string()
-        password = os.getenv("password")
+    TEMP_1_password = generate_random_string()
+    TEMP_2_password = generate_random_string()
+    TEMP_3_password = generate_random_string()
+    password = os.getenv("password")
 
-        change(password, TEMP_1_password)
-        change(TEMP_1_password, TEMP_2_password)
-        change(TEMP_2_password, TEMP_3_password)
-        change(TEMP_3_password, password)
+    change(password, TEMP_1_password)
+    change(TEMP_1_password, TEMP_2_password)
+    change(TEMP_2_password, TEMP_3_password)
+    change(TEMP_3_password, password)
 
-        send_mac_notification(True, "cube 배치: 패스워드 변경", "패스워드 변경이 완료되었습니다!")
-    except Exception as e:
-        log.error(e)
-        send_mac_notification(False, "cube 배치: 패스워드 변경", "패스워드 변경이 싪패되었습니다!")
-    finally:
-        if driver is not None:
-            driver.quit()
-            log.info("driver quited!!!!")
+    send_mac_notification(True, "cube 배치: 패스워드 변경", "패스워드 변경이 완료되었습니다!")
+
+if __name__ == "__main__":
+    MAX_RETRIES = 3
+    attempt = 0
+
+    while attempt < MAX_RETRIES:
+        try:
+            lets_start()
+            break
+        except Exception as e:
+            attempt += 1
+            log.error(f"{attempt}번째 시도/{MAX_RETRIES}: {e}")
+
+            if attempt == MAX_RETRIES:
+                send_mac_notification(False, "cube 배치: 패스워드 변경", "패스워드 변경이 실패되었습니다!")
+        finally:
+            if driver is not None:
+                driver.quit()
+                log.info("driver quited!!!!")
