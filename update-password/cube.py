@@ -42,8 +42,8 @@ def login():
     driver.set_page_load_timeout(5)
 
     log.info("로그인 중...")
-    WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.CLASS_NAME, "sc-epnACN")))
-    login_button = driver.find_element(by=By.CLASS_NAME, value="sc-epnACN")
+    WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div[1]/div/button/span")))
+    login_button = driver.find_element(By.XPATH, "/html/body/div/div[1]/div/button/span")
     login_button.click()
     driver.get(referer)
 
