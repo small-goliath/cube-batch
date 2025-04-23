@@ -30,7 +30,9 @@ def setup():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-extensions")
     driver = webdriver.Chrome(options=options)
-    driver.get(home)
+    driver.implicitly_wait(1.5)
+    driver.set_page_load_timeout(5)
+    driver.get(referer)
 
     return driver
 
@@ -38,20 +40,28 @@ def login():
     global driver
 
     driver = setup()
-    driver.implicitly_wait(1.5)
-    driver.set_page_load_timeout(5)
 
-    log.info("로그인 중...")
-    WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div[1]/div/button/span")))
-    login_button = driver.find_element(By.XPATH, "/html/body/div/div[1]/div/button/span")
-    login_button.click()
-    driver.get(referer)
+    login_button = driver.find_elements(By.XPATH, "/html/body/div/div[1]/div/button/span")
+    if login_button and login_button[0]:
+        log.info("cube 로그인 중...")
+        login_button[0].click()
+    sleep(1)
+
+    account_button = driver.find_elements(By.XPATH, "/html/body/div[1]/div[1]/div[2]/div/div/div[2]/div/div/div[1]/form/span/section/div/div/div/div/ul/li[1]")
+    if account_button and account_button[0]:
+        log.info("Google OAuth2 로그인 중...")
+        account_button[0].click()
+        password_input_box = driver.find_elements(By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input')
+        if password_input_box and password_input_box[0]:
+            password_input_box[0].send_keys(os.getenv("password"))
+            submit = driver.find_element(By.XPATH, '//*[@id="passwordNext"]/div/button/span')
+            submit.click()
 
 def change(old_password: str, new_password: str):
     sleep(5)
     log.info(f"비밀번호 변경 중... [{old_password}] to [{new_password}]")
 
-    driver.get(referer) # 간헐적으로 접근이 안돼서 한 번 더 접근 시도
+    driver.get(referer)
     WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.CLASS_NAME, "table-bordered")))
     change_password_button = driver.find_element(by=By.CLASS_NAME, value="btn-secondary")
     change_password_button.click()
